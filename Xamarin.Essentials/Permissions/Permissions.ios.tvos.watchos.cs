@@ -266,6 +266,10 @@ namespace Xamarin.Essentials
         {
         }
 
+        public partial class Tracking : BasePlatformPermission
+        {
+        }
+
         public partial class Vibrate : BasePlatformPermission
         {
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AppTrackingTransparency;
 using CoreLocation;
 using Foundation;
 
@@ -217,6 +218,64 @@ namespace Xamarin.Essentials
 
         public partial class StorageWrite : BasePlatformPermission
         {
+        }
+
+        public partial class Tracking : BasePlatformPermission
+        {
+            const string infoPlistKey = "NSUserTrackingUsageDescription";
+
+            protected override Func<IEnumerable<string>> RecommendedInfoPlistKeys => () =>
+            {
+                if (!Permissions.IsKeyDeclaredInInfoPlist(infoPlistKey))
+                    System.Diagnostics.Debug.WriteLine($@"You may need to set `{infoPlistKey}` in your Info.plist file to use the Tracking permission.");
+
+                return new string[] { infoPlistKey };
+            };
+
+            public override Task<PermissionStatus> CheckStatusAsync()
+            {
+                EnsureDeclared();
+
+                return Task.FromResult(GetTrackingPermissionStatus());
+            }
+
+            public override Task<PermissionStatus> RequestAsync()
+            {
+                EnsureDeclared();
+
+                var status = GetTrackingPermissionStatus();
+                if (status == PermissionStatus.Granted)
+                    return Task.FromResult(status);
+
+                EnsureMainThread();
+
+                return RequestTrackingPermission();
+            }
+
+            static PermissionStatus GetTrackingPermissionStatus()
+            {
+                if (DeviceInfo.Version < new Version(11, 0))
+                    return PermissionStatus.Granted;
+
+                return MapATTrackingManagerAuthorizationStatus(ATTrackingManager.TrackingAuthorizationStatus);
+            }
+
+            static async Task<PermissionStatus> RequestTrackingPermission()
+            {
+                if (DeviceInfo.Version < new Version(11, 0))
+                    return PermissionStatus.Granted;
+
+                var status = await ATTrackingManager.RequestTrackingAuthorizationAsync();
+                return MapATTrackingManagerAuthorizationStatus(status);
+            }
+
+            static PermissionStatus MapATTrackingManagerAuthorizationStatus(ATTrackingManagerAuthorizationStatus status) => status switch
+            {
+                ATTrackingManagerAuthorizationStatus.Authorized => PermissionStatus.Granted,
+                ATTrackingManagerAuthorizationStatus.Denied => PermissionStatus.Denied,
+                ATTrackingManagerAuthorizationStatus.Restricted => PermissionStatus.Restricted,
+                _ => PermissionStatus.Unknown,
+            };
         }
 
         public partial class Vibrate : BasePlatformPermission

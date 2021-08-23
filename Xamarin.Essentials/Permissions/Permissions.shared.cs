@@ -133,6 +133,10 @@ namespace Xamarin.Essentials
         {
         }
 
+        public partial class Tracking
+        {
+        }
+
         public partial class Vibrate
         {
         }

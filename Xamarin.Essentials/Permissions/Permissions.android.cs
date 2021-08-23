@@ -398,6 +398,10 @@ namespace Xamarin.Essentials
                 new (string, bool)[] { (Manifest.Permission.WriteExternalStorage, true) };
         }
 
+        public partial class Tracking : BasePlatformPermission
+        {
+        }
+
         public partial class Vibrate : BasePlatformPermission
         {
             public override (string androidPermission, bool isRuntime)[] RequiredPermissions =>

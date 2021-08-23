@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using AppTrackingTransparency;
 using Photos;
 
 namespace Xamarin.Essentials
@@ -75,6 +76,64 @@ namespace Xamarin.Essentials
 
                 return tcs.Task;
             }
+        }
+
+        public partial class Tracking : BasePlatformPermission
+        {
+            const string infoPlistKey = "NSUserTrackingUsageDescription";
+
+            protected override Func<IEnumerable<string>> RequiredInfoPlistKeys => () =>
+            {
+                if (!Permissions.IsKeyDeclaredInInfoPlist(infoPlistKey))
+                    Debug.WriteLine($@"You may need to set `{infoPlistKey}` in your Info.plist file to use the Tracking permission.");
+
+                return new string[] { infoPlistKey };
+            };
+
+            public override Task<PermissionStatus> CheckStatusAsync()
+            {
+                EnsureDeclared();
+
+                return Task.FromResult(GetTrackingPermissionStatus());
+            }
+
+            public override Task<PermissionStatus> RequestAsync()
+            {
+                EnsureDeclared();
+
+                var status = GetTrackingPermissionStatus();
+                if (status == PermissionStatus.Granted)
+                    return Task.FromResult(status);
+
+                EnsureMainThread();
+
+                return RequestTrackingPermission();
+            }
+
+            static PermissionStatus GetTrackingPermissionStatus()
+            {
+                if (!Platform.HasOSVersion(14, 0))
+                    return PermissionStatus.Granted;
+
+                return MapATTrackingManagerAuthorizationStatus(ATTrackingManager.TrackingAuthorizationStatus);
+            }
+
+            static async Task<PermissionStatus> RequestTrackingPermission()
+            {
+                if (!Platform.HasOSVersion(14, 0))
+                    return PermissionStatus.Granted;
+
+                var status = await ATTrackingManager.RequestTrackingAuthorizationAsync();
+                return MapATTrackingManagerAuthorizationStatus(status);
+            }
+
+            static PermissionStatus MapATTrackingManagerAuthorizationStatus(ATTrackingManagerAuthorizationStatus status) => status switch
+            {
+                ATTrackingManagerAuthorizationStatus.Authorized => PermissionStatus.Granted,
+                ATTrackingManagerAuthorizationStatus.Denied => PermissionStatus.Denied,
+                ATTrackingManagerAuthorizationStatus.Restricted => PermissionStatus.Restricted,
+                _ => PermissionStatus.Unknown,
+            };
         }
     }
 }

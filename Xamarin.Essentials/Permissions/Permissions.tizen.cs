@@ -207,6 +207,10 @@ namespace Xamarin.Essentials
                 new[] { ("http://tizen.org/privilege/mediastorage", true) };
         }
 
+        public partial class Tracking : BasePlatformPermission
+        {
+        }
+
         public partial class Vibrate : BasePlatformPermission
         {
             public override (string tizenPrivilege, bool isRuntime)[] RequiredPrivileges =>
