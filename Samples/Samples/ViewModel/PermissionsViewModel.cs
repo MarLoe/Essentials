@@ -31,6 +31,7 @@ namespace Samples.ViewModel
                 new PermissionItem("Speech", new Permissions.Speech()),
                 new PermissionItem("Storage (Read)", new Permissions.StorageRead()),
                 new PermissionItem("Storage (Write)", new Permissions.StorageWrite()),
+                new PermissionItem("Tracking", new Permissions.Tracking()),
                 new PermissionItem("Vibrate", new Permissions.Vibrate())
             };
     }
