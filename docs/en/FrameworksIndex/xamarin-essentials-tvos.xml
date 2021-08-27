@@ -721,6 +721,12 @@
     <Type Name="Xamarin.Essentials.Permissions/StorageWrite" Id="T:Xamarin.Essentials.Permissions.StorageWrite">
       <Member Id="M:Xamarin.Essentials.Permissions.StorageWrite.#ctor" />
     </Type>
+    <Type Name="Xamarin.Essentials.Permissions/Tracking" Id="T:Xamarin.Essentials.Permissions.Tracking">
+      <Member Id="M:Xamarin.Essentials.Permissions.Tracking.#ctor" />
+      <Member Id="M:Xamarin.Essentials.Permissions.Tracking.CheckStatusAsync" />
+      <Member Id="M:Xamarin.Essentials.Permissions.Tracking.RequestAsync" />
+      <Member Id="P:Xamarin.Essentials.Permissions.Tracking.RequiredInfoPlistKeys" />
+    </Type>
     <Type Name="Xamarin.Essentials.Permissions/Vibrate" Id="T:Xamarin.Essentials.Permissions.Vibrate">
       <Member Id="M:Xamarin.Essentials.Permissions.Vibrate.#ctor" />
     </Type>
